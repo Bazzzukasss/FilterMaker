@@ -1,14 +1,18 @@
-#ifndef FILTER
-#define FILTER
+#ifndef FILTER_H
+#define FILTER_H
 
 #include <vector>
 #include <deque>
 #include <iostream>
 #include <qmath.h>
+
 using namespace std;
-namespace ars{
+
+namespace Filters{
+
     enum FIRWinFunction {WFT_NONE,WFT_HAMMING,WFT_HANNING,WFT_BLACKMAN,WFT_SIN,WFT_NUTTAL};
     enum IIRWinFunction {WFT_BUTTERWORTH,WTF_CRITICAL_DAMPED,WTF_BESSEL};
+
     #define FIR_FILTER_LENGTH   128
     #define IIR_PASSES_NUMBER   2
     #define IIR_FILTER_COEFFS_NUMBER    5
@@ -31,22 +35,14 @@ namespace ars{
             deque<double> data;
             vector<double> coefficientes;
     };
-///IIR Filters
 
+///IIR Filters
     class IIRFilter:public Filter
     {
         public:
         IIRFilter(double _freq,unsigned int _passes,unsigned int _window):freq(_freq),passes(_passes),window(_window){}
             virtual ~IIRFilter(){}
-        /*
-                double result(0);
-                data.pop_back();
-                data.push_front(_value);
-                deque<double>::const_iterator it=data.cbegin();
-                for(const auto& el:coefficientes)
-                    result+=(*it++)*el;
-                return result;
-*/
+
             double operator()(double _value)
             {
                 double result(0);
@@ -267,7 +263,7 @@ namespace ars{
     class BlankFilter:public FIRFilter
     {
         public:
-            BlankFilter():FIRFilter(0,FIRWinFunction::WFT_NONE){};
+            BlankFilter():FIRFilter(0,FIRWinFunction::WFT_NONE){}
     };
 
     class AverageFilter:public FIRFilter
@@ -399,6 +395,7 @@ namespace ars{
             double lfreq;
             double hfreq;
     };
+
     class FIRHiPassFilter:public FIRBandPassFilter
     {
         public:
@@ -418,5 +415,5 @@ namespace ars{
             }
     };
 }
-#endif // FILTER
+#endif // FILTER_H
 

@@ -42,38 +42,25 @@ private slots:
 private:
     Ui::MainWindow *ui;
     FilterDevice filterDevice;
-    void resizeEvent(QResizeEvent* e)
-    {
-        if(e)
-            redrawPlots();
-    }
+
+    void initialize();
+    void initializePlots();
+    void applyValues();
+    void setValuesLimits();
+    void resizeEvent(QResizeEvent* e);
+
     void redrawCoefficientes();
     void redrawData();
     void redrawFilterResponse();
-    void redrawPlots()
-    {
-        redrawCoefficientes();
-        redrawData();
-        redrawFilterResponse();
-    }
+    void redrawPlots();
 
-    void setPlotScale(QCustomPlot* plot,int min_x,int max_x,int min_y,int max_y)
-    {
-        setPlotScaleX(plot,min_x,max_x);
-        setPlotScaleY(plot,min_y,max_y);
-    }
+    void generateFilters();
 
-    void setPlotScaleX(QCustomPlot* plot,int min_x,int max_x)
-    {
-        plot->xAxis->setRange(min_x,max_x);
-    }
-
-    void setPlotScaleY(QCustomPlot* plot,int min_y,int max_y)
-    {
-        plot->yAxis->setRange(min_y,max_y);
-    }
-
-    void initPlot(QCustomPlot* plot,unsigned int graph_count,const QBrush& background_brush,const QBrush& graph_brush,const QString& x_label,const QString& y_label,QCPGraph::LineStyle lineStyle,QCPScatterStyle scatterStyle);
+    void setPlotScale(QCustomPlot* plot,int min_x,int max_x,int min_y,int max_y);
+    void setPlotScaleX(QCustomPlot* plot,int min_x,int max_x);
+    void setPlotScaleY(QCustomPlot* plot,int min_y,int max_y);
+    void addGraph(QCustomPlot* aPlot, const QPen &aPen, const QBrush& aBrush, QCPGraph::LineStyle aLineStyle, QCPScatterStyle aScatterStyle);
+    void initPlot(QCustomPlot* aPlot, const QBrush& aBackgroundBrush, const QString& aLabelX, const QString& aLabelY);
 };
 
 #endif // MAINWINDOW_H

@@ -1,20 +1,13 @@
 #include "filterdevice.h"
-//SET================================================================================================
-FilterDevice::~FilterDevice()
-{
-    close();
-}
+#include <future>
+#include <thread>
 
-
-void FilterDevice::close()
-{
-
-}
 void FilterDevice::setFilterType(unsigned int _type)
 {
     filterType=_type;
     genLenBuffer(filterLenBuffer,getFilterLength());
 }
+
 void FilterDevice::setFIRFilterLength(unsigned int _length)
 {
     firFilterLength=_length;
@@ -25,6 +18,7 @@ void FilterDevice::setFIRFilterLength(unsigned int _length)
     firBandpassFilter.setLength(_length);
     genLenBuffer(filterLenBuffer,getFilterLength());
 }
+
 void FilterDevice::setFIRFilterWindow(unsigned int _window)
 {
     firFilterWindow=_window;
@@ -32,22 +26,26 @@ void FilterDevice::setFIRFilterWindow(unsigned int _window)
     firHipassFilter.setWindow(_window);
     firBandpassFilter.setWindow(_window);
 }
+
 void FilterDevice::setIIRFilterWindow(unsigned int _window)
 {
     iirFilterWindow=_window;
     iirLopassFilter.setWindow(_window);
     iirHipassFilter.setWindow(_window);
 }
+
 void FilterDevice::setAverage(unsigned int _average)
 {
     average=_average;
     averageFilter.setAverage(_average);
 }
+
 void FilterDevice::setDifferential(unsigned int _differential)
 {
     differential=_differential;
     differentialFilter.setDiff(_differential);
 }
+
 void FilterDevice::setLf(unsigned int _lf)
 {
     lf=_lf;
@@ -55,6 +53,7 @@ void FilterDevice::setLf(unsigned int _lf)
     iirHipassFilter.setFreq((double)((double)lf/(double)fsmp));
     firBandpassFilter.setLFreq((double)((double)lf/(double)fsmp));
 }
+
 void FilterDevice::setHf(unsigned int _hf)
 {
     hf=_hf;
@@ -62,7 +61,7 @@ void FilterDevice::setHf(unsigned int _hf)
     iirLopassFilter.setFreq((double)((double)hf/(double)fsmp));
     firBandpassFilter.setHFreq((double)((double)hf/(double)fsmp));
 }
-//GET================================================================================================
+
 const vector<double> &FilterDevice::getCoefficientes()
 {
     switch(filterType)
@@ -91,7 +90,7 @@ const vector<double> &FilterDevice::getCoefficientes()
     }
     return blankFilter.getCoefficientes();
 }
-//PROC================================================================================================
+
 void FilterDevice::genRespounse(int beg_freq,int freq_num,vector<double>* resData)
 {
     for(int i=beg_freq;i<beg_freq+freq_num;++i)
@@ -100,8 +99,7 @@ void FilterDevice::genRespounse(int beg_freq,int freq_num,vector<double>* resDat
         filterResponse[i]=*max_element(resData[i].begin()+firFilterLength,resData[i].end());
     }
 }
-#include <future>
-#include <thread>
+
 void FilterDevice::threadFunc(int f,int count)
 {
     cout<<"Thread func:"<<f<<" "<<count<<endl;
@@ -125,6 +123,7 @@ void FilterDevice::generateFilterRespounse()
         genRespounse(0,FREQ_NUM,resFreqData);
     #endif
 }
+
 void FilterDevice::genFrequencies()
 {
     double f_step((double)(1.0/(2.0*FREQ_NUM)));
@@ -151,14 +150,16 @@ void FilterDevice::genLenBuffer(vector<double> &vec, int len)
     vec.resize(len);
     iota(vec.begin(),vec.end(),0);
 }
+
 void FilterDevice::generatePulseResponce()
 {
     int len(getFilterLength());
     inputData.assign(len,0);
-    inputData[0]=1.0f;
+    inputData[0]=1024.0f;
     procData(inputData,outputData);
     genLenBuffer(dataLenBuffer,len);
 }
+
 void FilterDevice::procData(vector<double> &in_data, vector<double> &out_data)
 {
     vector<double>* in=&in_data;

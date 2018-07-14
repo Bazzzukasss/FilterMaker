@@ -1,12 +1,15 @@
-#ifndef FILTERDEVICE
-#define FILTERDEVICE
+#ifndef FILTERDEVICE_H
+#define FILTERDEVICE_H
+
 #include <filter.h>
 #include <algorithm>
 #include <QDebug>
 
-using namespace ars;
+using namespace Filters;
 using namespace std;
+
 enum FilterTypesEnum{FT_NONE,FT_FIR_AVERAGE,FT_FIR_DIFFERENTIAL,FT_FIR_LOPASS,FT_FIR_HIPASS,FT_FIR_BANDPASS,FT_IIR_LOPASS,FT_IIR_HIPASS,FT_IIR_BANDPASS};
+
 #define FREQ_NUM        1024
 #define POINTS_PER_FREQ 2048
 #define FREQ_AMP        1024
@@ -14,11 +17,10 @@ enum FilterTypesEnum{FT_NONE,FT_FIR_AVERAGE,FT_FIR_DIFFERENTIAL,FT_FIR_LOPASS,FT
 #define FREQ_PER_THREAD (FREQ_NUM/THREAD_NUM)
 
 #define MULTI_THREAD_CALCULATION
+
 class FilterDevice{
 
 public:
-    ~FilterDevice();
-    //SET
     void setFilterType(unsigned int _type);
     void setFIRFilterLength(unsigned int _length);
     void setFIRFilterWindow(unsigned int _window);
@@ -29,10 +31,10 @@ public:
     void setHf(unsigned int _hf);
     void setFsmp(unsigned int _fsmp){fsmp=_fsmp;}
     void setPassesNumber(unsigned int _passes_number){passes_number=_passes_number;}
-    //GET
+
     bool isFIRFilter()
     {
-        return (filterType<6);
+        return (filterType < 6);
     }
 
     unsigned int getFilterLength()
@@ -50,12 +52,13 @@ public:
     const vector<double>& getFilterLenBuffer(){return filterLenBuffer;}
     const vector<double>& getDataLenBuffer(){return dataLenBuffer;}
     const vector<double>& getResponseLenBuffer(){return responceLenBuffer;}
-    //PROC
+
     void generateFilterRespounse();
     void genFrequencies();
     void generatePulseResponce();
     void procData(vector<double>& in_data,vector<double>& out_data);
     void genLenBuffer(vector<double>& vec,int len);
+
 private:
     unsigned int filterType;
     unsigned int firFilterLength;
@@ -92,6 +95,4 @@ private:
     void close();
     void threadFunc(int f,int count);
 };
-#endif // FILTERDEVICE
-
-
+#endif // FILTERDEVICE_H
