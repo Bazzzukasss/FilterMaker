@@ -33,12 +33,12 @@ void MainWindow::initialize()
     connect(ui->horizontalSlider_Differential,  &QSlider::sliderReleased,                                               [&](){ apply(); });
     connect(ui->horizontalSlider_HF,            &QSlider::sliderReleased,                                               [&](){ apply(); });
     connect(ui->horizontalSlider_LF,            &QSlider::sliderReleased,                                               [&](){ apply(); });
+    connect(ui->spinBox_Fsmp,                   &QSpinBox::editingFinished,                                             [&](){ apply(); });
+    connect(ui->spinBox_Passes,                 &QSpinBox::editingFinished,                                             [&](){ apply(); });
+    connect(ui->spinBox_Length,                 &QSpinBox::editingFinished,                                             [&](){ apply(); });
     connect(ui->comboBox_Type,                  static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [&](){ apply(); });
     connect(ui->comboBox_FIRWindow,             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [&](){ apply(); });
     connect(ui->comboBox_IIRWindow,             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [&](){ apply(); });
-    connect(ui->spinBox_Fsmp,                   static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),          [&](){ apply(); });
-    connect(ui->spinBox_Passes,                 static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),          [&](){ apply(); });
-    connect(ui->spinBox_Length,                 static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),          [&](){ apply(); });
 
     connect(ui->verticalSlider_Scale,           &QSlider::valueChanged,     [&](int value){ setPlotScale(ui->plot_Data,0,filterDevice.getDataLenBuffer().size()-1,-pow(2,value),pow(2,value)); redrawData(); });
     connect(ui->pushButton_Copy,                &QPushButton::clicked,      [&](){ copyCoefficients(); });
@@ -191,104 +191,121 @@ void MainWindow::updateUI()
     ui->spinBox_Average->setMaximum(ui->spinBox_Length->value());
     ui->spinBox_Differential->setMaximum(ui->spinBox_Length->value());
 
-    ui->horizontalSlider_Averag->setEnabled(false);
-    ui->horizontalSlider_Differential->setEnabled(false);
-    ui->horizontalSlider_HF->setEnabled(false);
-    ui->horizontalSlider_LF->setEnabled(false);
-
-    ui->label_Average->setEnabled(false);
-    ui->label_Differential->setEnabled(false);
-    ui->label_LF->setEnabled(false);
-    ui->label_HF->setEnabled(false);
-
-    ui->spinBox_Length->setEnabled(false);
-    ui->spinBox_Passes->setEnabled(false);
-    ui->comboBox_FIRWindow->setEnabled(false);
-    ui->comboBox_IIRWindow->setEnabled(false);
-
-    ui->label_Length->setEnabled(false);
-    ui->label_FIRWin->setEnabled(false);
-    ui->label_Passes->setEnabled(false);
-    ui->label_IIRWin->setEnabled(false);
+    bool horizontalSlider_Averag = false;
+    bool horizontalSlider_Differential = false;
+    bool horizontalSlider_HF = false;
+    bool horizontalSlider_LF = false;
+    bool label_Average = false;
+    bool label_Differential = false;
+    bool label_LF = false;
+    bool label_HF = false;
+    bool spinBox_Length = false;
+    bool spinBox_Passes = false;
+    bool comboBox_FIRWindow = false;
+    bool comboBox_IIRWindow = false;
+    bool label_Length = false;
+    bool label_FIRWin = false;
+    bool label_Passes = false;
+    bool label_IIRWin = false;
 
     int filterType = ui->comboBox_Type->currentIndex();
     switch(filterType)
     {
         case FT_FIR_AVERAGE:
-            ui->horizontalSlider_Averag->setEnabled(true);
-            ui->label_Average->setEnabled(true);
-            ui->spinBox_Length->setEnabled(true);
-            ui->label_Length->setEnabled(true);
+            horizontalSlider_Averag = true;
+            label_Average = true;
+            spinBox_Length = true;
+            label_Length = true;
             break;
         case FT_FIR_DIFFERENTIAL:
-            ui->horizontalSlider_Differential->setEnabled(true);
-            ui->label_Differential->setEnabled(true);
-            ui->spinBox_Length->setEnabled(true);
-            ui->label_Length->setEnabled(true);
+            horizontalSlider_Differential = true;
+            label_Differential = true;
+            spinBox_Length = true;
+            label_Length = true;
             break;
         case FT_FIR_LOPASS:
         case FT_IIR_LOPASS:
-            ui->horizontalSlider_HF->setEnabled(true);
-            ui->label_HF->setEnabled(true);
+            horizontalSlider_HF = true;
+            label_HF = true;
             if(filterType == FT_FIR_LOPASS)
             {
-                ui->spinBox_Length->setEnabled(true);
-                ui->comboBox_FIRWindow->setEnabled(true);
-                ui->label_Length->setEnabled(true);
-                ui->label_FIRWin->setEnabled(true);
+                spinBox_Length = true;
+                comboBox_FIRWindow = true;
+                label_Length = true;
+                label_FIRWin = true;
             }
             else
             {
-                ui->spinBox_Passes->setEnabled(true);
-                ui->comboBox_IIRWindow->setEnabled(true);
-                ui->label_Passes->setEnabled(true);
-                ui->label_IIRWin->setEnabled(true);
+                spinBox_Passes = true;
+                comboBox_IIRWindow = true;
+                label_Passes = true;
+                label_IIRWin = true;
             }
             break;
         case FT_FIR_HIPASS:
         case FT_IIR_HIPASS:
-            ui->horizontalSlider_LF->setEnabled(true);
-            ui->label_LF->setEnabled(true);
+            horizontalSlider_LF = true;
+            label_LF = true;
             if(filterType == FT_FIR_HIPASS)
             {
-                ui->spinBox_Length->setEnabled(true);
-                ui->comboBox_FIRWindow->setEnabled(true);
-                ui->label_Length->setEnabled(true);
-                ui->label_FIRWin->setEnabled(true);
+                spinBox_Length = true;
+                comboBox_FIRWindow = true;
+                label_Length = true;
+                label_FIRWin = true;
             }
             else
             {
-                ui->spinBox_Passes->setEnabled(true);
-                ui->comboBox_IIRWindow->setEnabled(true);
-                ui->label_Passes->setEnabled(true);
-                ui->label_IIRWin->setEnabled(true);
+                spinBox_Passes = true;
+                comboBox_IIRWindow = true;
+                label_Passes = true;
+                label_IIRWin = true;
             }
             break;
         case FT_FIR_BANDPASS:
         case FT_IIR_BANDPASS:
-            ui->horizontalSlider_HF->setEnabled(true);
-            ui->horizontalSlider_LF->setEnabled(true);
-            ui->label_LF->setEnabled(true);
-            ui->label_HF->setEnabled(true);
+            horizontalSlider_HF = true;
+            horizontalSlider_LF = true;
+            label_LF = true;
+            label_HF = true;
             if(filterType == FT_FIR_BANDPASS)
             {
-                ui->spinBox_Length->setEnabled(true);
-                ui->comboBox_FIRWindow->setEnabled(true);
-                ui->label_Length->setEnabled(true);
-                ui->label_FIRWin->setEnabled(true);
+                spinBox_Length = true;
+                comboBox_FIRWindow = true;
+                label_Length = true;
+                label_FIRWin = true;
             }
             else
             {
-                ui->spinBox_Passes->setEnabled(true);
-                ui->comboBox_IIRWindow->setEnabled(true);
-                ui->label_Passes->setEnabled(true);
-                ui->label_IIRWin->setEnabled(true);
+                spinBox_Passes = true;
+                comboBox_IIRWindow = true;
+                label_Passes = true;
+                label_IIRWin = true;
             }
             break;
         case FT_NONE:
         default:
             break;
     }
+
+    ui->horizontalSlider_Averag->setEnabled(horizontalSlider_Averag);
+    ui->horizontalSlider_Differential->setEnabled(horizontalSlider_Differential);
+    ui->horizontalSlider_HF->setEnabled(horizontalSlider_HF);
+    ui->horizontalSlider_LF->setEnabled(horizontalSlider_LF);
+
+    ui->label_Average->setEnabled(label_Average);
+    ui->label_Differential->setEnabled(label_Differential);
+    ui->label_LF->setEnabled(label_LF);
+    ui->label_HF->setEnabled(label_HF);
+
+    ui->spinBox_Length->setEnabled(spinBox_Length);
+    ui->spinBox_Passes->setEnabled(spinBox_Passes);
+    ui->comboBox_FIRWindow->setEnabled(comboBox_FIRWindow);
+    ui->comboBox_IIRWindow->setEnabled(comboBox_IIRWindow);
+
+    ui->label_Length->setEnabled(label_Length);
+    ui->label_FIRWin->setEnabled(label_FIRWin);
+    ui->label_Passes->setEnabled(label_Passes);
+    ui->label_IIRWin->setEnabled(label_IIRWin);
 }
 
 void MainWindow::resizeEvent(QResizeEvent *e)
