@@ -107,7 +107,7 @@ void FilterDevice::threadFunc(int f,int count)
 
 void FilterDevice::generateFilterRespounse()
 {
-    #ifdef MULTI_THREAD_CALCULATION
+    #ifdef MULTI_THREAD_CALCULATION_ENABLED
 
         future<void> f[THREAD_NUM];
         int freq;

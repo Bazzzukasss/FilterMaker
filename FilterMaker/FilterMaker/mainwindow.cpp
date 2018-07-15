@@ -100,7 +100,7 @@ void MainWindow::showCoefficients()
     auto coefficients = filterDevice.getCoefficients();
     ui->plainTextEdit_coefficients->clear();
     for(auto& coef : coefficients){
-        QString value = ui->checkBox_Hex->isChecked() ? QString::number( (short)(coef*0xFFFF), 16 ) : QString::number( coef , 'f', 12 );
+        QString value = ui->checkBox_Hex->isChecked() ? QString::number( (int)(coef*0xFFFF), 16 ) : QString::number( coef , 'f', 12 );
         ui->plainTextEdit_coefficients->appendPlainText( value );
     }
 }
