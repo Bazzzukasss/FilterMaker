@@ -49,7 +49,7 @@ void MainWindow::initialize()
     updateUI();
     showValues();
     showCoefficients();
-    filterDevice.genFrequencies();
+    filterDevice.generateFrequencies();
     initializePlots();
 }
 
@@ -59,13 +59,13 @@ void MainWindow::initializePlots()
     addGraph(ui->plot_FilterCoefficientes,QPen(Qt::blue),QBrush(Qt::white),QCPGraph::lsImpulse,QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
     setPlotScale(ui->plot_FilterCoefficientes,0,filterDevice.getFilterLength()-1,-1,1);
 
-    filterDevice.generatePulseResponce();
+    filterDevice.generateData();
     initPlot(ui->plot_Data,QBrush(Qt::white),"Data","");
-    addGraph(ui->plot_Data,QPen(Qt::blue),QBrush(Qt::white),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
-    addGraph(ui->plot_Data,QPen(Qt::red),QBrush(Qt::white),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
+    addGraph(ui->plot_Data,QPen(Qt::blue),QBrush(Qt::transparent),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
+    addGraph(ui->plot_Data,QPen(Qt::red),QBrush(Qt::transparent),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
     setPlotScale(ui->plot_Data,0,filterDevice.getDataLenBuffer().size()-1,-pow(2,ui->verticalSlider_Scale->value()),pow(2,ui->verticalSlider_Scale->value()));
 
-    filterDevice.generateFilterRespounse();
+    filterDevice.generateFrequencyRespounse();
     initPlot(ui->plot_FilterResponse,QBrush(Qt::white),"Response","");
     addGraph(ui->plot_FilterResponse,QPen(Qt::blue),QBrush(QColor(0, 0, 255, 20)),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
     setPlotScale(ui->plot_FilterResponse,0,filterDevice.getResponseLenBuffer().size()-1,0,1024*2);
@@ -119,7 +119,7 @@ void MainWindow::apply()
 {
     updateUI();
     applyValues();
-    generateFilters();
+    generateFilter();
     showCoefficients();
     redrawPlots();
 }
@@ -168,7 +168,6 @@ void MainWindow::applyValues()
     filterDevice.setFsmp( ui->spinBox_Fsmp->value() );
     filterDevice.setHf( ui->horizontalSlider_HF->value() );
     filterDevice.setLf( ui->horizontalSlider_LF->value() );
-    setPlotScaleX( ui->plot_FilterCoefficientes,-1,filterDevice.getFilterLength() );
 }
 
 void MainWindow::showValues()
@@ -338,15 +337,17 @@ void MainWindow::redrawCoefficients()
 
 void MainWindow::redrawPlots()
 {
+    setPlotScaleX( ui->plot_FilterCoefficientes,-1,filterDevice.getFilterLength() );
+    setPlotScaleX( ui->plot_Data,0,filterDevice.getDataLenBuffer().size()-1);
     redrawCoefficients();
     redrawData();
     redrawFilterResponse();
 }
 
-void MainWindow::generateFilters()
+void MainWindow::generateFilter()
 {
-    filterDevice.generateFilterRespounse();
-    filterDevice.generatePulseResponce();
+    filterDevice.generateFrequencyRespounse();
+    filterDevice.generateData();
 }
 
 void MainWindow::setPlotScale(QCustomPlot *plot, int min_x, int max_x, int min_y, int max_y)

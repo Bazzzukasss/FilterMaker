@@ -61,11 +61,11 @@ public:
     unsigned int getHF() const                          { return hf; }
     unsigned int getIIRFilterPasses() const             { return passes_number; }
 
-    void generateFilterRespounse();
-    void genFrequencies();
-    void generatePulseResponce();
+    void generateFrequencyRespounse();
+    void generateFrequencies();
+    void generateData();
     void procData(vector<double>& in_data,vector<double>& out_data);
-    void genLenBuffer(vector<double>& vec,int len);
+    void generateLenBuffer(vector<double>& vec,int len);
 
 private:
     unsigned int filterType;

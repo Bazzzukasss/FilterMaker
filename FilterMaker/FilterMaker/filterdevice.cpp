@@ -5,7 +5,7 @@
 void FilterDevice::setFilterType(unsigned int _type)
 {
     filterType=_type;
-    genLenBuffer(filterLenBuffer,getFilterLength());
+    generateLenBuffer(filterLenBuffer,getFilterLength());
 }
 
 void FilterDevice::setFIRFilterLength(unsigned int _length)
@@ -16,7 +16,7 @@ void FilterDevice::setFIRFilterLength(unsigned int _length)
     firLopassFilter.setLength(_length);
     firHipassFilter.setLength(_length);
     firBandpassFilter.setLength(_length);
-    genLenBuffer(filterLenBuffer,getFilterLength());
+    generateLenBuffer(filterLenBuffer,getFilterLength());
 }
 
 void FilterDevice::setFIRFilterWindow(unsigned int _window)
@@ -105,7 +105,7 @@ void FilterDevice::threadFunc(int f,int count)
     cout<<"Thread func:"<<f<<" "<<count<<endl;
 }
 
-void FilterDevice::generateFilterRespounse()
+void FilterDevice::generateFrequencyRespounse()
 {
     #ifdef MULTI_THREAD_CALCULATION_ENABLED
 
@@ -124,13 +124,14 @@ void FilterDevice::generateFilterRespounse()
     #endif
 }
 
-void FilterDevice::genFrequencies()
+void FilterDevice::generateFrequencies()
 {
-    double f_step((double)(1.0/(2.0*FREQ_NUM)));
+    double f_step((double)(1.0/(2.0*(FREQ_NUM - 1))));
+    //double f_step((double)( 1.0/( FREQ_NUM - 1 ) ));
 
     for(unsigned int i=0;i<FREQ_NUM;++i)
         genFreqData(freqData[i],FREQ_AMP,i*f_step,POINTS_PER_FREQ);
-    genLenBuffer(responceLenBuffer,FREQ_NUM);
+    generateLenBuffer(responceLenBuffer,FREQ_NUM);
     filterResponse.resize(FREQ_NUM);
 }
 
@@ -145,39 +146,19 @@ void FilterDevice::genFreqData(vector<double> &data, double amp, double freq, un
     }
 }
 
-void FilterDevice::genLenBuffer(vector<double> &vec, int len)
+void FilterDevice::generateLenBuffer(vector<double> &vec, int len)
 {
     vec.resize(len);
     iota(vec.begin(),vec.end(),0);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void FilterDevice::generatePulseResponce()
+void FilterDevice::generateData()
 {
     int len(getFilterLength());
     inputData.assign(len,0);
     inputData[0]=1024.0f;
     procData(inputData,outputData);
-    genLenBuffer(dataLenBuffer,len);
+    generateLenBuffer(dataLenBuffer,len);
 }
 
 void FilterDevice::procData(vector<double> &in_data, vector<double> &out_data)

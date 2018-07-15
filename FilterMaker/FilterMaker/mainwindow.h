@@ -45,7 +45,7 @@ private:
     void redrawFilterResponse();
     void redrawPlots();
 
-    void generateFilters();
+    void generateFilter();
 
     void setPlotScale(QCustomPlot* plot,int min_x,int max_x,int min_y,int max_y);
     void setPlotScaleX(QCustomPlot* plot,int min_x,int max_x);
