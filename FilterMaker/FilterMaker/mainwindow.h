@@ -9,6 +9,8 @@ namespace Ui {
 class MainWindow;
 }
 
+class QSettings;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -20,9 +22,13 @@ public:
 private:
     Ui::MainWindow *ui;
     FilterDevice filterDevice;
+    QSettings* mpSettings;
 
     void initialize();
     void initializePlots();
+    void loadSettings();
+    void saveSettings();
+
     void apply();
     void copyCoefficients();
     void saveCoefficients();

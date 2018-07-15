@@ -32,12 +32,9 @@ public:
     void setFsmp(unsigned int _fsmp){fsmp=_fsmp;}
     void setPassesNumber(unsigned int _passes_number){passes_number=_passes_number;}
 
-    bool isFIRFilter()
-    {
-        return (filterType < 6);
-    }
+    bool isFIRFilter() const { return (filterType < 6); }
 
-    unsigned int getFilterLength()
+    unsigned int getFilterLength() const
     {
         if(isFIRFilter())
             return firFilterLength;
@@ -45,13 +42,24 @@ public:
             return iirFilterLength;
     }
     const vector<double>& getCoefficients();
-    const vector<double>& getInputData(){return inputData;}
-    const vector<double>& getOutputData(){return outputData;}
-    const vector<double>& getFilterResponse(){return filterResponse;}
+    const vector<double>& getInputData() const          {return inputData; }
+    const vector<double>& getOutputData() const         {return outputData; }
+    const vector<double>& getFilterResponse() const     {return filterResponse; }
 
-    const vector<double>& getFilterLenBuffer(){return filterLenBuffer;}
-    const vector<double>& getDataLenBuffer(){return dataLenBuffer;}
-    const vector<double>& getResponseLenBuffer(){return responceLenBuffer;}
+    const vector<double>& getFilterLenBuffer() const    {return filterLenBuffer; }
+    const vector<double>& getDataLenBuffer() const      { return dataLenBuffer; }
+    const vector<double>& getResponseLenBuffer() const  { return responceLenBuffer; }
+
+    unsigned int getFilterType() const                  { return filterType; }
+    unsigned int getFIRFilterLength() const             { return firFilterLength; }
+    unsigned int getFIRFilterWindow() const             { return firFilterWindow; }
+    unsigned int getIIRFilterWindow() const             { return iirFilterWindow; }
+    unsigned int getAverage() const                     { return average; }
+    unsigned int getDifferential() const                { return differential; }
+    unsigned int getFsmp() const                        { return fsmp; }
+    unsigned int getLF() const                          { return lf; }
+    unsigned int getHF() const                          { return hf; }
+    unsigned int getIIRFilterPasses() const             { return passes_number; }
 
     void generateFilterRespounse();
     void genFrequencies();

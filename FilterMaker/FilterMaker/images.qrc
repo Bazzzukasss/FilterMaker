@@ -6,5 +6,7 @@
         <file>images/dif.png</file>
         <file>images/ico.png</file>
         <file>images/art.png</file>
+        <file>images/copy.png</file>
+        <file>images/save.png</file>
     </qresource>
 </RCC>

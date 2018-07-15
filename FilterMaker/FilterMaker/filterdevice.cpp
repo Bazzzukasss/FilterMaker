@@ -151,6 +151,26 @@ void FilterDevice::genLenBuffer(vector<double> &vec, int len)
     iota(vec.begin(),vec.end(),0);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void FilterDevice::generatePulseResponce()
 {
     int len(getFilterLength());

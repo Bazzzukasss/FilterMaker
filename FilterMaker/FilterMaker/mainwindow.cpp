@@ -13,11 +13,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    saveSettings();
     delete ui;
 }
 
 void MainWindow::initialize()
 {
+    bool isSettingsFileExists = QFileInfo("config.ini").exists();
+    mpSettings = new QSettings("config.ini",QSettings::IniFormat,this);
+    if(isSettingsFileExists)
+        loadSettings();
+
     connect(ui->horizontalSlider_Averag,        &QSlider::valueChanged, [&](){ showValues(); });
     connect(ui->horizontalSlider_Differential,  &QSlider::valueChanged, [&](){ showValues(); });
     connect(ui->horizontalSlider_HF,            &QSlider::valueChanged, [&](){ showValues(); });
@@ -42,6 +48,7 @@ void MainWindow::initialize()
     applyValues();
     updateUI();
     showValues();
+    showCoefficients();
     filterDevice.genFrequencies();
     initializePlots();
 }
@@ -62,6 +69,50 @@ void MainWindow::initializePlots()
     initPlot(ui->plot_FilterResponse,QBrush(Qt::white),"Response","");
     addGraph(ui->plot_FilterResponse,QPen(Qt::blue),QBrush(QColor(0, 0, 255, 20)),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
     setPlotScale(ui->plot_FilterResponse,0,filterDevice.getResponseLenBuffer().size()-1,0,1024*2);
+}
+
+void MainWindow::loadSettings()
+{
+    mpSettings->beginGroup("user");
+        ui->checkBox_Hex->setChecked( mpSettings->value("hexadecimal").toBool() );
+        ui->verticalSlider_Scale->setValue( mpSettings->value("scale").toInt() );
+    mpSettings->endGroup();
+    mpSettings->beginGroup("filters");
+        ui->comboBox_Type->setCurrentIndex( mpSettings->value("type").toInt() );
+        ui->comboBox_FIRWindow->setCurrentIndex( mpSettings->value("firWindow").toInt() );
+        ui->comboBox_IIRWindow->setCurrentIndex( mpSettings->value("iirWindow").toInt() );
+
+        ui->spinBox_Length->setValue( mpSettings->value("length").toInt() );
+        ui->spinBox_Passes->setValue( mpSettings->value("passes").toInt() );
+        ui->spinBox_Fsmp->setValue( mpSettings->value("fsmp").toInt() );
+
+        ui->horizontalSlider_Averag->setValue( mpSettings->value("average").toInt() );
+        ui->horizontalSlider_Differential->setValue( mpSettings->value("differencial").toInt() );
+        ui->horizontalSlider_LF->setValue( mpSettings->value("lf").toInt() );
+        ui->horizontalSlider_HF->setValue( mpSettings->value("hf").toInt() );
+    mpSettings->endGroup();
+}
+
+void MainWindow::saveSettings()
+{
+    mpSettings->beginGroup("user");
+        mpSettings->setValue("hexadecimal",ui->checkBox_Hex->isChecked());
+        mpSettings->setValue("scale",ui->verticalSlider_Scale->value());
+    mpSettings->endGroup();
+    mpSettings->beginGroup("filters");
+        mpSettings->setValue("type",filterDevice.getFilterType() );
+        mpSettings->setValue("firWindow",filterDevice.getFIRFilterWindow());
+        mpSettings->setValue("iirWindow",filterDevice.getIIRFilterWindow());
+
+        mpSettings->setValue("length",filterDevice.getFIRFilterLength());
+        mpSettings->setValue("passes",filterDevice.getIIRFilterPasses());
+        mpSettings->setValue("fsmp",filterDevice.getFsmp());
+
+        mpSettings->setValue("average",filterDevice.getAverage());
+        mpSettings->setValue("differencial",filterDevice.getDifferential());
+        mpSettings->setValue("lf",filterDevice.getLF());
+        mpSettings->setValue("hf",filterDevice.getHF());
+    mpSettings->endGroup();
 }
 
 void MainWindow::apply()

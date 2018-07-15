@@ -243,7 +243,7 @@ QFrame#frame_Type
              </font>
             </property>
             <property name="text">
-             <string>Filter Response</string>
+             <string>Filter Frequency Response</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -311,7 +311,7 @@ QFrame#frame_Type
              </font>
             </property>
             <property name="text">
-             <string>Filter Coefficients</string>
+             <string>Filter Impulse Responce</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -371,8 +371,18 @@ QFrame#frame_Type
               <height>32</height>
              </size>
             </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
             <property name="text">
-             <string/>
+             <string>Filter Coefficients</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
@@ -892,17 +902,17 @@ QFrame#frame_Type
          </item>
         </widget>
        </item>
-       <item row="2" column="6">
+       <item row="2" column="9">
         <widget class="QPushButton" name="pushButton_Save">
          <property name="minimumSize">
           <size>
-           <width>150</width>
+           <width>71</width>
            <height>30</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>71</width>
            <height>30</height>
           </size>
          </property>
@@ -916,19 +926,29 @@ QFrame#frame_Type
          <property name="text">
           <string>Save</string>
          </property>
+         <property name="icon">
+          <iconset resource="images.qrc">
+           <normaloff>:/images/images/save.png</normaloff>:/images/images/save.png</iconset>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>16</width>
+           <height>16</height>
+          </size>
+         </property>
         </widget>
        </item>
-       <item row="3" column="6">
+       <item row="2" column="8">
         <widget class="QPushButton" name="pushButton_Copy">
          <property name="minimumSize">
           <size>
-           <width>150</width>
+           <width>71</width>
            <height>30</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>150</width>
+           <width>71</width>
            <height>30</height>
           </size>
          </property>
@@ -942,16 +962,14 @@ QFrame#frame_Type
          <property name="text">
           <string>Copy</string>
          </property>
+         <property name="icon">
+          <iconset resource="images.qrc">
+           <normaloff>:/images/images/copy.png</normaloff>:/images/images/copy.png</iconset>
+         </property>
         </widget>
        </item>
-       <item row="4" column="6">
+       <item row="3" column="8" colspan="2">
         <widget class="QCheckBox" name="checkBox_Hex">
-         <property name="maximumSize">
-          <size>
-           <width>80</width>
-           <height>30</height>
-          </size>
-         </property>
          <property name="font">
           <font>
            <pointsize>10</pointsize>
@@ -963,7 +981,7 @@ QFrame#frame_Type
           <enum>Qt::RightToLeft</enum>
          </property>
          <property name="text">
-          <string>Hex</string>
+          <string>Hexadecimal</string>
          </property>
         </widget>
        </item>
