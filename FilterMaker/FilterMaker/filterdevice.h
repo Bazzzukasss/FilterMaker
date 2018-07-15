@@ -44,7 +44,7 @@ public:
         else
             return iirFilterLength;
     }
-    const vector<double>& getCoefficientes();
+    const vector<double>& getCoefficients();
     const vector<double>& getInputData(){return inputData;}
     const vector<double>& getOutputData(){return outputData;}
     const vector<double>& getFilterResponse(){return filterResponse;}

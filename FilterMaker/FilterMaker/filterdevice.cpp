@@ -62,33 +62,33 @@ void FilterDevice::setHf(unsigned int _hf)
     firBandpassFilter.setHFreq((double)((double)hf/(double)fsmp));
 }
 
-const vector<double> &FilterDevice::getCoefficientes()
+const vector<double> &FilterDevice::getCoefficients()
 {
     switch(filterType)
     {
         case FT_FIR_AVERAGE:
-            return averageFilter.getCoefficientes();
+            return averageFilter.getCoefficients();
             break;
         case FT_FIR_DIFFERENTIAL:
-            return differentialFilter.getCoefficientes();
+            return differentialFilter.getCoefficients();
             break;
         case FT_FIR_LOPASS:
-            return firLopassFilter.getCoefficientes();
+            return firLopassFilter.getCoefficients();
             break;
         case FT_FIR_HIPASS:
-            return firHipassFilter.getCoefficientes();
+            return firHipassFilter.getCoefficients();
             break;
         case FT_FIR_BANDPASS:
-            return firBandpassFilter.getCoefficientes();
+            return firBandpassFilter.getCoefficients();
             break;
         case FT_IIR_LOPASS:
-            return iirLopassFilter.getCoefficientes();
+            return iirLopassFilter.getCoefficients();
             break;
         case FT_IIR_HIPASS:
-            return iirHipassFilter.getCoefficientes();
+            return iirHipassFilter.getCoefficients();
         break;
     }
-    return blankFilter.getCoefficientes();
+    return blankFilter.getCoefficients();
 }
 
 void FilterDevice::genRespounse(int beg_freq,int freq_num,vector<double>* resData)

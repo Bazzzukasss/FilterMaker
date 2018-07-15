@@ -30,7 +30,7 @@ namespace Filters{
                 stream<<endl;
                 return stream;
             }
-            const vector<double>& getCoefficientes(){return coefficientes;}
+            const vector<double>& getCoefficients(){return coefficientes;}
         protected:
             deque<double> data;
             vector<double> coefficientes;

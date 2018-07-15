@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <filterdevice.h>
 #include "qcustomplot.h"
+
 namespace Ui {
 class MainWindow;
 }
@@ -16,40 +17,24 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private slots:
-    void on_horizontalSlider_Averag_valueChanged(int value);
-
-    void on_comboBox_Type_currentIndexChanged(int index);
-
-    void on_comboBox_FIRWindow_currentIndexChanged(int index);
-
-    void on_horizontalSlider_Differential_valueChanged(int value);
-
-    void on_spinBox_Fsmp_valueChanged(int arg1);
-
-    void on_horizontalSlider_LF_valueChanged(int value);
-
-    void on_horizontalSlider_HF_valueChanged(int value);
-
-    void on_spinBox_Length_valueChanged(int arg1);
-
-    void on_verticalSlider_Scale_valueChanged(int value);
-
-    void on_comboBox_IIRWindow_currentIndexChanged(int index);
-
-    void on_spinBox_Passes_valueChanged(int arg1);
-
 private:
     Ui::MainWindow *ui;
     FilterDevice filterDevice;
 
     void initialize();
     void initializePlots();
+    void apply();
+    void copyCoefficients();
+    void saveCoefficients();
+    void showCoefficients();
+
     void applyValues();
-    void setValuesLimits();
+    void showValues();
+    void updateUI();
+
     void resizeEvent(QResizeEvent* e);
 
-    void redrawCoefficientes();
+    void redrawCoefficients();
     void redrawData();
     void redrawFilterResponse();
     void redrawPlots();
