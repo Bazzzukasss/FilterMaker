@@ -33,9 +33,11 @@ void MainWindow::initialize()
     connect(ui->horizontalSlider_Differential,  &QSlider::sliderReleased,                                               [&](){ apply(); });
     connect(ui->horizontalSlider_HF,            &QSlider::sliderReleased,                                               [&](){ apply(); });
     connect(ui->horizontalSlider_LF,            &QSlider::sliderReleased,                                               [&](){ apply(); });
+
     connect(ui->spinBox_Fsmp,                   &QSpinBox::editingFinished,                                             [&](){ apply(); });
-    connect(ui->spinBox_Passes,                 &QSpinBox::editingFinished,                                             [&](){ apply(); });
     connect(ui->spinBox_Length,                 &QSpinBox::editingFinished,                                             [&](){ apply(); });
+    connect(ui->spinBox_Passes,                 static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),          [&](){ apply(); });
+
     connect(ui->comboBox_Type,                  static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [&](){ apply(); });
     connect(ui->comboBox_FIRWindow,             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [&](){ apply(); });
     connect(ui->comboBox_IIRWindow,             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [&](){ apply(); });
