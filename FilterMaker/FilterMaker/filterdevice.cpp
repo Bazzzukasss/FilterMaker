@@ -154,11 +154,11 @@ void FilterDevice::generateLenBuffer(vector<double> &vec, int len)
 
 void FilterDevice::generateData()
 {
-    int len(getFilterLength());
-    inputData.assign(len,0);
-    inputData[0]=1024.0f;
+    //int len(getFilterLength());
+    //inputData.assign(len,0);
+    //inputData[0]=1024.0f;
     procData(inputData,outputData);
-    generateLenBuffer(dataLenBuffer,len);
+    generateLenBuffer(dataLenBuffer,outputData.size());
 }
 
 void FilterDevice::procData(vector<double> &in_data, vector<double> &out_data)

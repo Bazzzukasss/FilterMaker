@@ -31,6 +31,7 @@ public:
     void setHf(unsigned int _hf);
     void setFsmp(unsigned int _fsmp){fsmp=_fsmp;}
     void setPassesNumber(unsigned int _passes_number){passes_number=_passes_number;}
+    void setInputData(const vector<double>& aData){ inputData = aData; }
 
     bool isFIRFilter() const { return (filterType < 6); }
 

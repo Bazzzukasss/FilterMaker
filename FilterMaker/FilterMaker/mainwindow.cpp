@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QClipboard>
 #include <QFileDialog>
+#include "dataloader.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -53,6 +54,8 @@ void MainWindow::initialize()
     showCoefficients();
     filterDevice.generateFrequencies();
     initializePlots();
+    //loadInputData("RSN.res");
+    //loadInputData("test1.res");
 }
 
 void MainWindow::initializePlots()
@@ -114,7 +117,14 @@ void MainWindow::saveSettings()
         mpSettings->setValue("differencial",filterDevice.getDifferential());
         mpSettings->setValue("lf",filterDevice.getLF());
         mpSettings->setValue("hf",filterDevice.getHF());
-    mpSettings->endGroup();
+        mpSettings->endGroup();
+}
+
+void MainWindow::loadInputData(const QString &aFilename)
+{
+    EddyconDataLoader loader;
+    loader.load(aFilename);
+    filterDevice.setInputData(loader.getFrequencyData(0).mXData);
 }
 
 void MainWindow::apply()

@@ -28,6 +28,7 @@ private:
     void initializePlots();
     void loadSettings();
     void saveSettings();
+    void loadInputData(const QString& aFilename);
 
     void apply();
     void copyCoefficients();
