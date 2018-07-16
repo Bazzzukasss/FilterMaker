@@ -16,12 +16,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     qcustomplot.cpp \
     filterdevice.cpp \
-    filter.cpp
+    filter.cpp \
+    dataloader.cpp
 
 HEADERS  += mainwindow.h \
     filter.h \
     qcustomplot.h \
-    filterdevice.h
+    filterdevice.h \
+    dataloader.h
 
 FORMS    += mainwindow.ui
 
