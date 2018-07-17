@@ -171,9 +171,11 @@ public:
     virtual bool load(const QString& aFilename);
     const QByteArray& getData() const { return mData; }
     int getDataSize() const { return mData.size(); }
+    bool isDataLoaded() const { return mIsDataLoaded; }
 
 protected:
     QByteArray mData;
+    bool mIsDataLoaded{false};
 };
 
 class EddyconDataLoader : public DataLoader

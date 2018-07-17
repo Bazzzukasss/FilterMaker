@@ -25,55 +25,61 @@ void MainWindow::initialize()
     if(isSettingsFileExists)
         loadSettings();
 
-    connect(ui->horizontalSlider_Averag,        &QSlider::valueChanged, [&](){ showValues(); });
-    connect(ui->horizontalSlider_Differential,  &QSlider::valueChanged, [&](){ showValues(); });
-    connect(ui->horizontalSlider_HF,            &QSlider::valueChanged, [&](){ showValues(); });
-    connect(ui->horizontalSlider_LF,            &QSlider::valueChanged, [&](){ showValues(); });
+    connect(ui->horizontalSlider_Averag,        &QSlider::valueChanged,                                                 [&](){ showValues(); });
+    connect(ui->horizontalSlider_Differential,  &QSlider::valueChanged,                                                 [&](){ showValues(); });
+    connect(ui->horizontalSlider_HF,            &QSlider::valueChanged,                                                 [&](){ showValues(); });
+    connect(ui->horizontalSlider_LF,            &QSlider::valueChanged,                                                 [&](){ showValues(); });
 
     connect(ui->horizontalSlider_Averag,        &QSlider::sliderReleased,                                               [&](){ apply(); });
     connect(ui->horizontalSlider_Differential,  &QSlider::sliderReleased,                                               [&](){ apply(); });
     connect(ui->horizontalSlider_HF,            &QSlider::sliderReleased,                                               [&](){ apply(); });
     connect(ui->horizontalSlider_LF,            &QSlider::sliderReleased,                                               [&](){ apply(); });
-
     connect(ui->spinBox_Fsmp,                   &QSpinBox::editingFinished,                                             [&](){ apply(); });
     connect(ui->spinBox_Length,                 &QSpinBox::editingFinished,                                             [&](){ apply(); });
     connect(ui->spinBox_Passes,                 static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),          [&](){ apply(); });
-
     connect(ui->comboBox_Type,                  static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [&](){ apply(); });
     connect(ui->comboBox_FIRWindow,             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [&](){ apply(); });
     connect(ui->comboBox_IIRWindow,             static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [&](){ apply(); });
 
-    connect(ui->verticalSlider_Scale,           &QSlider::valueChanged,     [&](int value){ setPlotScale(ui->plot_Data,0,filterDevice.getDataLenBuffer().size()-1,-pow(2,value),pow(2,value)); redrawData(); });
-    connect(ui->pushButton_Copy,                &QPushButton::clicked,      [&](){ copyCoefficients(); });
-    connect(ui->pushButton_Save,                &QPushButton::clicked,      [&](){ saveCoefficients(); });
-    connect(ui->checkBox_Hex,                   &QCheckBox::toggled,        [&](){ showCoefficients(); });
+    connect(ui->verticalSlider_Scale,           &QSlider::valueChanged,                                                 [&](){ scalePlots(); });
+    connect(ui->horizontalScrollBar_Position,   &QSlider::valueChanged,                                                 [&](){ scalePlots(); });
+    connect(ui->comboBox_Sweep,                 static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [&](){ scalePlots(); });
 
+    connect(ui->pushButton_Copy,                &QPushButton::clicked,                                                  [&](){ copyCoefficients(); });
+    connect(ui->pushButton_Save,                &QPushButton::clicked,                                                  [&](){ saveCoefficients(); });
+    connect(ui->checkBox_Hex,                   &QCheckBox::toggled,                                                    [&](){ showCoefficients(); });
+
+    connect(ui->pushButton_Load,                &QPushButton::clicked,                                                  [&](){ loadData();showData(); });
+    connect(ui->spinBox_Frequency,              static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),          [&](){ showData(); });
+    connect(ui->radioButton_X,                  &QRadioButton::toggled,                                                 [&](){ showData(); });
+    connect(ui->radioButton_Y,                  &QRadioButton::toggled,                                                 [&](){ showData(); });
+
+    initializePlots();
     applyValues();
-    updateUI();
+    filterDevice.generateFrequencies();
+    filterDevice.generateFrequencyRespounse();
+    loadData(mDataFilename);
+    showData();
     showValues();
     showCoefficients();
-    filterDevice.generateFrequencies();
-    initializePlots();
-    //loadInputData("RSN.res");
-    //loadInputData("test1.res");
+    updateUI();
 }
 
 void MainWindow::initializePlots()
 {
-    initPlot(ui->plot_FilterCoefficientes,QBrush(Qt::white),"Coefficientes","");
+    initPlot(ui->plot_FilterCoefficientes,QBrush(Qt::white),"Coefficientes","",false,false);
     addGraph(ui->plot_FilterCoefficientes,QPen(Qt::blue),QBrush(Qt::white),QCPGraph::lsImpulse,QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
-    setPlotScale(ui->plot_FilterCoefficientes,0,filterDevice.getFilterLength()-1,-1,1);
 
-    filterDevice.generateData();
-    initPlot(ui->plot_Data,QBrush(Qt::white),"Data","");
+    initPlot(ui->plot_Data,QBrush(Qt::white),"","",true,true);
     addGraph(ui->plot_Data,QPen(Qt::blue),QBrush(Qt::transparent),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
     addGraph(ui->plot_Data,QPen(Qt::red),QBrush(Qt::transparent),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
-    setPlotScale(ui->plot_Data,0,filterDevice.getDataLenBuffer().size()-1,-pow(2,ui->verticalSlider_Scale->value()),pow(2,ui->verticalSlider_Scale->value()));
+    ui->plot_Data->setInteraction(QCP::iRangeDrag);
+    ui->plot_Data->setInteraction(QCP::iRangeZoom);
+    ui->plot_Data->axisRect()->setRangeDrag(Qt::Vertical);
+    ui->plot_Data->axisRect()->setRangeZoom(Qt::Vertical);
 
-    filterDevice.generateFrequencyRespounse();
-    initPlot(ui->plot_FilterResponse,QBrush(Qt::white),"Response","");
+    initPlot(ui->plot_FilterResponse,QBrush(Qt::white),"Response","",false,false);
     addGraph(ui->plot_FilterResponse,QPen(Qt::blue),QBrush(QColor(0, 0, 255, 20)),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
-    setPlotScale(ui->plot_FilterResponse,0,filterDevice.getResponseLenBuffer().size()-1,0,1024*2);
 }
 
 void MainWindow::loadSettings()
@@ -81,6 +87,16 @@ void MainWindow::loadSettings()
     mpSettings->beginGroup("user");
         ui->checkBox_Hex->setChecked( mpSettings->value("hexadecimal").toBool() );
         ui->verticalSlider_Scale->setValue( mpSettings->value("scale").toInt() );
+        ui->comboBox_Sweep->setCurrentIndex( mpSettings->value("sweep").toInt() );
+        ui->horizontalScrollBar_Position->setMaximum( mpSettings->value("total").toInt() );
+        ui->horizontalScrollBar_Position->setValue( mpSettings->value("position").toInt() );
+        mDataFilename = mpSettings->value("data").toString();
+        ui->spinBox_Frequency->setValue(mpSettings->value("frequency").toInt());
+        if(mpSettings->value("component").toString() == "x")
+            ui->radioButton_X->setChecked(true);
+        else
+            ui->radioButton_Y->setChecked(true);
+
     mpSettings->endGroup();
     mpSettings->beginGroup("filters");
         ui->comboBox_Type->setCurrentIndex( mpSettings->value("type").toInt() );
@@ -103,6 +119,15 @@ void MainWindow::saveSettings()
     mpSettings->beginGroup("user");
         mpSettings->setValue("hexadecimal",ui->checkBox_Hex->isChecked());
         mpSettings->setValue("scale",ui->verticalSlider_Scale->value());
+        mpSettings->setValue("sweep",ui->comboBox_Sweep->currentIndex());
+        mpSettings->setValue("position",ui->horizontalScrollBar_Position->value());
+        mpSettings->setValue("total",ui->horizontalScrollBar_Position->maximum());
+        mpSettings->setValue("data",mDataFilename);
+        mpSettings->setValue("frequency",ui->spinBox_Frequency->value());
+        if(ui->radioButton_X->isChecked())
+            mpSettings->setValue("component","x");
+        else
+            mpSettings->setValue("component","y");
     mpSettings->endGroup();
     mpSettings->beginGroup("filters");
         mpSettings->setValue("type",filterDevice.getFilterType() );
@@ -120,11 +145,35 @@ void MainWindow::saveSettings()
         mpSettings->endGroup();
 }
 
-void MainWindow::loadInputData(const QString &aFilename)
+void MainWindow::loadData()
 {
-    EddyconDataLoader loader;
-    loader.load(aFilename);
-    filterDevice.setInputData(loader.getFrequencyData(0).mXData);
+    QString filename = QFileDialog::getOpenFileName(this,"Open results","","Res Files (*.res)");
+
+    if( filename.isEmpty() )
+        return;
+
+    loadData(filename);
+}
+
+void MainWindow::loadData(const QString &aFilename)
+{
+    if( mDataLoader.load(aFilename) )
+        mDataFilename = aFilename;
+}
+
+void MainWindow::showData()
+{
+    if(mDataLoader.isDataLoaded())
+    {
+        auto& data = ui->radioButton_X->isChecked() ? mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mXData : mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mYData;
+        filterDevice.setInputData(data);
+        ui->label_Data->setText( mDataFilename );
+        ui->spinBox_Frequency->setMaximum( mDataLoader.getFrequenciesCount() - 1 );
+        filterDevice.generateData();
+
+        scalePlots();
+        redrawPlots();
+    }
 }
 
 void MainWindow::apply()
@@ -133,6 +182,7 @@ void MainWindow::apply()
     applyValues();
     generateFilter();
     showCoefficients();
+    scalePlots();
     redrawPlots();
 }
 
@@ -201,6 +251,11 @@ void MainWindow::updateUI()
     ui->horizontalSlider_Differential->setMaximum(ui->spinBox_Length->value());
     ui->spinBox_Average->setMaximum(ui->spinBox_Length->value());
     ui->spinBox_Differential->setMaximum(ui->spinBox_Length->value());
+
+    bool isDataLoaded = mDataLoader.isDataLoaded();
+    ui->spinBox_Frequency->setEnabled(isDataLoaded);
+    ui->radioButton_X->setEnabled(isDataLoaded);
+    ui->radioButton_Y->setEnabled(isDataLoaded);
 
     bool horizontalSlider_Averag = false;
     bool horizontalSlider_Differential = false;
@@ -330,30 +385,43 @@ void MainWindow::redrawData()
     ui->plot_Data->graph(0)->setData( QVector<double>::fromStdVector(filterDevice.getDataLenBuffer()),QVector<double>::fromStdVector(filterDevice.getInputData()));
     ui->plot_Data->graph(1)->setData( QVector<double>::fromStdVector(filterDevice.getDataLenBuffer()),QVector<double>::fromStdVector(filterDevice.getOutputData()));
     ui->plot_Data->replot();
-    ui->plot_Data->graph(0)->clearData();
 }
 
 void MainWindow::redrawFilterResponse()
 {
     ui->plot_FilterResponse->graph(0)->setData( QVector<double>::fromStdVector(filterDevice.getResponseLenBuffer()),QVector<double>::fromStdVector(filterDevice.getFilterResponse()));
     ui->plot_FilterResponse->replot();
-    ui->plot_FilterResponse->graph(0)->clearData();
 }
 
 void MainWindow::redrawCoefficients()
 {
     ui->plot_FilterCoefficientes->graph(0)->setData( QVector<double>::fromStdVector(filterDevice.getFilterLenBuffer()),QVector<double>::fromStdVector(filterDevice.getCoefficients()));
     ui->plot_FilterCoefficientes->replot();
-    ui->plot_FilterCoefficientes->graph(0)->clearData();
 }
 
 void MainWindow::redrawPlots()
 {
-    setPlotScaleX( ui->plot_FilterCoefficientes,-1,filterDevice.getFilterLength() );
-    setPlotScaleX( ui->plot_Data,0,filterDevice.getDataLenBuffer().size()-1);
     redrawCoefficients();
     redrawData();
     redrawFilterResponse();
+}
+
+void MainWindow::scalePlots()
+{
+    int vScale = ui->verticalSlider_Scale->value();
+    int sweep = ui->comboBox_Sweep->currentText().toInt();
+
+    ui->horizontalScrollBar_Position->setPageStep( sweep );
+    ui->horizontalScrollBar_Position->setMaximum( filterDevice.getDataLenBuffer().size() - 1 );
+
+    int hPosition = ui->horizontalScrollBar_Position->value();
+
+    setPlotScale(ui->plot_Data, hPosition, hPosition + sweep, -pow(2,vScale), pow(2,vScale));
+    setPlotScaleX(ui->plot_FilterCoefficientes,-1,filterDevice.getFilterLength());
+    setPlotScale(ui->plot_FilterResponse,0,filterDevice.getResponseLenBuffer().size()-1,0,1024*2);
+    setPlotScale(ui->plot_FilterCoefficientes,0,filterDevice.getFilterLength()-1,-1,1);
+
+    ui->plot_Data->replot();
 }
 
 void MainWindow::generateFilter()
@@ -378,17 +446,18 @@ void MainWindow::setPlotScaleY(QCustomPlot *plot, int min_y, int max_y)
     plot->yAxis->setRange(min_y,max_y);
 }
 
-void MainWindow::initPlot(QCustomPlot* aPlot, const QBrush& aBackgroundBrush, const QString& aLabelX, const QString& aLabelY)
+void MainWindow::initPlot(QCustomPlot* aPlot, const QBrush& aBackgroundBrush, const QString& aLabelX, const QString& aLabelY, bool aTicksX, bool aTicksY)
 {
     aPlot->setBackground(aBackgroundBrush);
     aPlot->xAxis->setLabel(aLabelX);
     aPlot->yAxis->setLabel(aLabelY);
-    aPlot->xAxis->setTickLabels(false);
-    aPlot->yAxis->setTickLabels(false);
+    aPlot->xAxis->setTickLabels(aTicksX);
+    aPlot->yAxis->setTickLabels(aTicksY);
     //aPlot->yAxis->setVisible(false);
     //aPlot->xAxis->setVisible(false);
     aPlot->axisRect()->setupFullAxesBox();
-    aPlot->axisRect()->setAutoMargins(QCP::msNone);
+    if(!(aTicksX || aTicksY))
+        aPlot->axisRect()->setAutoMargins(QCP::msNone);
     aPlot->axisRect()->setMargins(QMargins(1,2,2,1));
 }
 

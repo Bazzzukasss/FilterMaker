@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <filterdevice.h>
 #include "qcustomplot.h"
+#include "dataloader.h"
 
 namespace Ui {
 class MainWindow;
@@ -23,12 +24,16 @@ private:
     Ui::MainWindow *ui;
     FilterDevice filterDevice;
     QSettings* mpSettings;
+    QString mDataFilename;
+    EddyconDataLoader mDataLoader;
 
     void initialize();
     void initializePlots();
     void loadSettings();
     void saveSettings();
-    void loadInputData(const QString& aFilename);
+    void loadData();
+    void loadData(const QString& aFilename);
+    void showData();
 
     void apply();
     void copyCoefficients();
@@ -45,6 +50,7 @@ private:
     void redrawData();
     void redrawFilterResponse();
     void redrawPlots();
+    void scalePlots();
 
     void generateFilter();
 
@@ -52,7 +58,7 @@ private:
     void setPlotScaleX(QCustomPlot* plot,int min_x,int max_x);
     void setPlotScaleY(QCustomPlot* plot,int min_y,int max_y);
     void addGraph(QCustomPlot* aPlot, const QPen &aPen, const QBrush& aBrush, QCPGraph::LineStyle aLineStyle, QCPScatterStyle aScatterStyle);
-    void initPlot(QCustomPlot* aPlot, const QBrush& aBackgroundBrush, const QString& aLabelX, const QString& aLabelY);
+    void initPlot(QCustomPlot* aPlot, const QBrush& aBackgroundBrush, const QString& aLabelX, const QString& aLabelY, bool aTicksX, bool aTicksY);
 };
 
 #endif // MAINWINDOW_H

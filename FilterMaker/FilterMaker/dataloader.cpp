@@ -42,10 +42,10 @@ bool EddyconDataLoader::load(const QString &aFilename)
                 freqData.mXData.push_back( *pData++ );
                 freqData.mYData.push_back( *pData++ );
             }
-            //qDebug()<<i<<*pData;
             pData+=2;
 
         }
+        mIsDataLoaded = true;
         return true;
     }
     return false;
