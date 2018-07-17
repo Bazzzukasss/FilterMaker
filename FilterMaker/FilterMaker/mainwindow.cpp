@@ -147,7 +147,7 @@ void MainWindow::saveSettings()
 
 void MainWindow::loadData()
 {
-    QString filename = QFileDialog::getOpenFileName(this,"Open results","","Res Files (*.res)");
+    QString filename = QFileDialog::getOpenFileName(this,"Open results","","Eddycon Files (*.res)");
 
     if( filename.isEmpty() )
         return;

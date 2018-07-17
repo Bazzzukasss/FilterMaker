@@ -18,10 +18,10 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>Filters Maker</string>
+   <string>Filter Maker</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="images.qrc">
+   <iconset>
     <normaloff>:/images/images/ico.png</normaloff>:/images/images/ico.png</iconset>
   </property>
   <property name="styleSheet">
@@ -411,7 +411,7 @@ background-color: rgb(255, 255, 255);
              <string>Load</string>
             </property>
             <property name="icon">
-             <iconset resource="images.qrc">
+             <iconset>
               <normaloff>:/images/images/open.png</normaloff>:/images/images/open.png</iconset>
             </property>
             <property name="iconSize">
@@ -1197,7 +1197,7 @@ background-color: rgb(255, 255, 255);
           <string>Save</string>
          </property>
          <property name="icon">
-          <iconset resource="images.qrc">
+          <iconset>
            <normaloff>:/images/images/save.png</normaloff>:/images/images/save.png</iconset>
          </property>
          <property name="iconSize">
@@ -1233,7 +1233,7 @@ background-color: rgb(255, 255, 255);
           <string>Copy</string>
          </property>
          <property name="icon">
-          <iconset resource="images.qrc">
+          <iconset>
            <normaloff>:/images/images/copy.png</normaloff>:/images/images/copy.png</iconset>
          </property>
         </widget>
@@ -1396,7 +1396,7 @@ background-color: rgb(255, 255, 255);
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="images.qrc">:/images/images/avr.png</pixmap>
+          <pixmap>:/images/images/avr.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -1484,7 +1484,7 @@ background-color: rgb(255, 255, 255);
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="images.qrc">:/images/images/dif.png</pixmap>
+          <pixmap>:/images/images/dif.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -1515,7 +1515,7 @@ background-color: rgb(255, 255, 255);
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="images.qrc">:/images/images/hf.png</pixmap>
+          <pixmap>:/images/images/hf.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -1583,7 +1583,7 @@ background-color: rgb(255, 255, 255);
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="images.qrc">:/images/images/lf.png</pixmap>
+          <pixmap>:/images/images/lf.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -1782,8 +1782,6 @@ background-color: rgb(255, 255, 255);
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="images.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
