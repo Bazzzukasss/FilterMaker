@@ -56,6 +56,8 @@ void MainWindow::initialize()
     applyValues();
     filterDevice.generateFrequencies();
     filterDevice.generateFrequencyRespounse();
+    filterDevice.addInputData({});
+    filterDevice.addInputData({});
     loadData(mDataFilename);
     showData();
     showValues();
@@ -163,11 +165,7 @@ void MainWindow::loadData()
 void MainWindow::loadData(const QString &aFilename)
 {
     if( mDataLoader.load(aFilename) )
-    {
         mDataFilename = aFilename;
-        filterDevice.addInputData({});
-        filterDevice.addInputData({});
-    }
 }
 
 void MainWindow::showData()
@@ -391,14 +389,11 @@ void MainWindow::resizeEvent(QResizeEvent *e)
 
 void MainWindow::redrawHVPlot()
 {
-    auto dataX = mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mXData;
-    auto dataY = mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mYData;
-
-    ui->plot_DataH->graph(0)->setData( QVector<double>::fromStdVector(filterDevice.getIODataLenBuffer(0)),QVector<double>::fromStdVector(dataX));
+    ui->plot_DataH->graph(0)->setData( QVector<double>::fromStdVector(filterDevice.getIODataLenBuffer(0)),QVector<double>::fromStdVector(filterDevice.getInputData(0)));
     ui->plot_DataH->graph(1)->setData( QVector<double>::fromStdVector(filterDevice.getIODataLenBuffer(0)),QVector<double>::fromStdVector(filterDevice.getOutputData(0)));
     ui->plot_DataH->replot();
 
-    ui->plot_DataV->graph(0)->setData( QVector<double>::fromStdVector(filterDevice.getIODataLenBuffer(1)),QVector<double>::fromStdVector(dataY));
+    ui->plot_DataV->graph(0)->setData( QVector<double>::fromStdVector(filterDevice.getIODataLenBuffer(1)),QVector<double>::fromStdVector(filterDevice.getInputData(1)));
     ui->plot_DataV->graph(1)->setData( QVector<double>::fromStdVector(filterDevice.getIODataLenBuffer(1)),QVector<double>::fromStdVector(filterDevice.getOutputData(1)));
     ui->plot_DataV->replot();
 }
@@ -408,8 +403,8 @@ void MainWindow::redrawXYPlot()
     int sweep = ui->comboBox_Sweep->currentText().toInt();
     int hPosition = ui->horizontalScrollBar_Position->value();
 
-    auto dataX = mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mXData;
-    auto dataY = mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mYData;
+    auto dataX = filterDevice.getInputData(0);
+    auto dataY = filterDevice.getInputData(1);
     auto dataXProc = filterDevice.getOutputData(0);
     auto dataYProc = filterDevice.getOutputData(1);
 
@@ -418,8 +413,15 @@ void MainWindow::redrawXYPlot()
     int end = hPosition + sweep;
     if(end >= total)
         end = total - 1;
+    if(total == 0)
+        return;
     std::vector<double> dataXY_H(&dataX[beg], &dataX[end]);
     std::vector<double> dataXY_V(&dataY[beg], &dataY[end]);
+
+    total = dataXProc.size();
+    if(end >= total)
+        end = total - 1;
+
     std::vector<double> dataXY_HProc(&dataXProc[beg], &dataXProc[end]);
     std::vector<double> dataXY_VProc(&dataYProc[beg], &dataYProc[end]);
 
@@ -450,13 +452,11 @@ void MainWindow::redrawPlots()
 
 void MainWindow::scalePlots()
 {
-    auto dataX = mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mXData;
-
     int vScale = ui->verticalSlider_Scale->value();
     int sweep = ui->comboBox_Sweep->currentText().toInt();
 
     ui->horizontalScrollBar_Position->setPageStep( sweep );
-    ui->horizontalScrollBar_Position->setMaximum( dataX.size() - 1 );
+    ui->horizontalScrollBar_Position->setMaximum( filterDevice.getIODataLenBuffer(0).size() - 1 );
 
     int hPosition = ui->horizontalScrollBar_Position->value();
 
