@@ -154,11 +154,11 @@ void FilterDevice::generateLenBuffer(vector<double> &vec, int len)
 
 void FilterDevice::generateData()
 {
-    //int len(getFilterLength());
-    //inputData.assign(len,0);
-    //inputData[0]=1024.0f;
-    procData(inputData,outputData);
-    generateLenBuffer(dataLenBuffer,outputData.size());
+    for(int i = 0; i < inputDatas.size(); ++i)
+    {
+        procData(inputDatas[i],outputDatas[i]);
+        generateLenBuffer(ioDataLenBuffers[i],outputDatas[i].size());
+    }
 }
 
 void FilterDevice::procData(vector<double> &in_data, vector<double> &out_data)
@@ -170,30 +170,35 @@ void FilterDevice::procData(vector<double> &in_data, vector<double> &out_data)
         return;
     if(out_data.size()<size)
         out_data.resize(size);
-    for(unsigned int  p=0;p<passes_number;p++)
+
+    for(unsigned int  p=0; p < passes_number; p++)
     {
         if(p>0)
         {
             in=out=&out_data;
         }
 
-
         switch(filterType)
         {
         case FT_FIR_AVERAGE:
             transform((*in).cbegin(),(*in).cend(),(*out).begin(),averageFilter);
+            return;
             break;
         case FT_FIR_DIFFERENTIAL:
             transform((*in).cbegin(),(*in).cend(),(*out).begin(),differentialFilter);
+            return;
             break;
         case FT_FIR_LOPASS:
             transform((*in).cbegin(),(*in).cend(),(*out).begin(),firLopassFilter);
+            return;
             break;
         case FT_FIR_HIPASS:
             transform((*in).cbegin(),(*in).cend(),(*out).begin(),firHipassFilter);
+            return;
             break;
         case FT_FIR_BANDPASS:
             transform((*in).cbegin(),(*in).cend(),(*out).begin(),firBandpassFilter);
+            return;
             break;
         case FT_IIR_LOPASS:
             transform((*in).cbegin(),(*in).cend(),(*out).begin(),iirLopassFilter);
@@ -206,6 +211,7 @@ void FilterDevice::procData(vector<double> &in_data, vector<double> &out_data)
             transform((*out).cbegin(),(*out).cend(),(*out).begin(),iirHipassFilter);
             break;
         case FT_NONE:
+            return;
         default:
             break;
         }

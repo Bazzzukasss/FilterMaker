@@ -31,7 +31,14 @@ public:
     void setHf(unsigned int _hf);
     void setFsmp(unsigned int _fsmp){fsmp=_fsmp;}
     void setPassesNumber(unsigned int _passes_number){passes_number=_passes_number;}
-    void setInputData(const vector<double>& aData){ inputData = aData; }
+    void setInputData(const vector<double>& aData, int index){
+        inputDatas[index] = aData;
+    }
+    void addInputData(const vector<double>& aData){
+        inputDatas.push_back( aData );
+        outputDatas.push_back( aData );
+        ioDataLenBuffers.push_back( {} );
+    }
 
     bool isFIRFilter() const { return (filterType < 6); }
 
@@ -43,24 +50,23 @@ public:
             return iirFilterLength;
     }
     const vector<double>& getCoefficients();
-    const vector<double>& getInputData() const          {return inputData; }
-    const vector<double>& getOutputData() const         {return outputData; }
-    const vector<double>& getFilterResponse() const     {return filterResponse; }
+    const vector<double>& getInputData(int index) const             { return inputDatas[index]; }
+    const vector<double>& getOutputData(int index) const            { return outputDatas[index]; }
+    const vector<double>& getIODataLenBuffer(int index) const       { return ioDataLenBuffers[index]; }
+    const vector<double>& getFilterResponse() const                 { return filterResponse; }
+    const vector<double>& getFilterLenBuffer() const                { return filterLenBuffer; }
+    const vector<double>& getResponseLenBuffer() const              { return responceLenBuffer; }
 
-    const vector<double>& getFilterLenBuffer() const    {return filterLenBuffer; }
-    const vector<double>& getDataLenBuffer() const      { return dataLenBuffer; }
-    const vector<double>& getResponseLenBuffer() const  { return responceLenBuffer; }
-
-    unsigned int getFilterType() const                  { return filterType; }
-    unsigned int getFIRFilterLength() const             { return firFilterLength; }
-    unsigned int getFIRFilterWindow() const             { return firFilterWindow; }
-    unsigned int getIIRFilterWindow() const             { return iirFilterWindow; }
-    unsigned int getAverage() const                     { return average; }
-    unsigned int getDifferential() const                { return differential; }
-    unsigned int getFsmp() const                        { return fsmp; }
-    unsigned int getLF() const                          { return lf; }
-    unsigned int getHF() const                          { return hf; }
-    unsigned int getIIRFilterPasses() const             { return passes_number; }
+    unsigned int getFilterType() const                              { return filterType; }
+    unsigned int getFIRFilterLength() const                         { return firFilterLength; }
+    unsigned int getFIRFilterWindow() const                         { return firFilterWindow; }
+    unsigned int getIIRFilterWindow() const                         { return iirFilterWindow; }
+    unsigned int getAverage() const                                 { return average; }
+    unsigned int getDifferential() const                            { return differential; }
+    unsigned int getFsmp() const                                    { return fsmp; }
+    unsigned int getLF() const                                      { return lf; }
+    unsigned int getHF() const                                      { return hf; }
+    unsigned int getIIRFilterPasses() const                         { return passes_number; }
 
     void generateFrequencyRespounse();
     void generateFrequencies();
@@ -81,11 +87,11 @@ private:
     unsigned int hf;
     unsigned int passes_number{1};
 
-    vector<double>inputData;
-    vector<double>outputData;
+    vector< vector<double> >inputDatas;
+    vector< vector<double> >outputDatas;
+    vector< vector<double> >ioDataLenBuffers;
     vector<double>filterResponse;
-    vector<double>filterLenBuffer;
-    vector<double>dataLenBuffer;
+    vector<double>filterLenBuffer;    
     vector<double>responceLenBuffer;
     vector<double>freqData[FREQ_NUM];
     vector<double>resFreqData[FREQ_NUM];

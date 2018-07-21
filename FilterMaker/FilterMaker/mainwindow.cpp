@@ -51,8 +51,6 @@ void MainWindow::initialize()
 
     connect(ui->pushButton_Load,                &QPushButton::clicked,                                                  [&](){ loadData();showData(); });
     connect(ui->spinBox_Frequency,              static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),          [&](){ showData(); });
-    connect(ui->radioButton_X,                  &QRadioButton::toggled,                                                 [&](){ showData(); });
-    connect(ui->radioButton_Y,                  &QRadioButton::toggled,                                                 [&](){ showData(); });
 
     initializePlots();
     applyValues();
@@ -70,13 +68,27 @@ void MainWindow::initializePlots()
     initPlot(ui->plot_FilterCoefficientes,QBrush(Qt::white),"Coefficientes","",false,false);
     addGraph(ui->plot_FilterCoefficientes,QPen(Qt::blue),QBrush(Qt::white),QCPGraph::lsImpulse,QCPScatterStyle(QCPScatterStyle::ssCircle, 3));
 
-    initPlot(ui->plot_Data,QBrush(Qt::white),"","",true,true);
-    addGraph(ui->plot_Data,QPen(Qt::blue),QBrush(Qt::transparent),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
-    addGraph(ui->plot_Data,QPen(Qt::red),QBrush(Qt::transparent),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
-    ui->plot_Data->setInteraction(QCP::iRangeDrag);
-    ui->plot_Data->setInteraction(QCP::iRangeZoom);
-    ui->plot_Data->axisRect()->setRangeDrag(Qt::Vertical);
-    ui->plot_Data->axisRect()->setRangeZoom(Qt::Vertical);
+    initPlot(ui->plot_DataH,QBrush(Qt::white),"","",true,true);
+    addGraph(ui->plot_DataH,QPen(Qt::blue),QBrush(Qt::transparent),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
+    addGraph(ui->plot_DataH,QPen(Qt::red),QBrush(Qt::transparent),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
+    ui->plot_DataH->setInteraction(QCP::iRangeDrag);
+    ui->plot_DataH->setInteraction(QCP::iRangeZoom);
+    ui->plot_DataH->axisRect()->setRangeDrag(Qt::Vertical);
+    ui->plot_DataH->axisRect()->setRangeZoom(Qt::Vertical);
+
+    initPlot(ui->plot_DataV,QBrush(Qt::white),"","",true,true);
+    addGraph(ui->plot_DataV,QPen(Qt::blue),QBrush(Qt::transparent),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
+    addGraph(ui->plot_DataV,QPen(Qt::red),QBrush(Qt::transparent),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
+    ui->plot_DataV->setInteraction(QCP::iRangeDrag);
+    ui->plot_DataV->setInteraction(QCP::iRangeZoom);
+    ui->plot_DataV->axisRect()->setRangeDrag(Qt::Vertical);
+    ui->plot_DataV->axisRect()->setRangeZoom(Qt::Vertical);
+
+    initPlot(ui->plot_DataXY,QBrush(Qt::white),"","",true,true);
+    addCurve(ui->plot_DataXY,QPen(Qt::blue),QBrush(Qt::transparent),QCPCurve::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
+    addCurve(ui->plot_DataXY,QPen(Qt::red),QBrush(Qt::transparent),QCPCurve::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
+    ui->plot_DataXY->setInteraction(QCP::iRangeDrag);
+    ui->plot_DataXY->setInteraction(QCP::iRangeZoom);
 
     initPlot(ui->plot_FilterResponse,QBrush(Qt::white),"Response","",false,false);
     addGraph(ui->plot_FilterResponse,QPen(Qt::blue),QBrush(QColor(0, 0, 255, 20)),QCPGraph::lsLine,QCPScatterStyle(QCPScatterStyle::ssCircle, 1));
@@ -92,10 +104,6 @@ void MainWindow::loadSettings()
         ui->horizontalScrollBar_Position->setValue( mpSettings->value("position").toInt() );
         mDataFilename = mpSettings->value("data").toString();
         ui->spinBox_Frequency->setValue(mpSettings->value("frequency").toInt());
-        if(mpSettings->value("component").toString() == "x")
-            ui->radioButton_X->setChecked(true);
-        else
-            ui->radioButton_Y->setChecked(true);
 
     mpSettings->endGroup();
     mpSettings->beginGroup("filters");
@@ -124,10 +132,7 @@ void MainWindow::saveSettings()
         mpSettings->setValue("total",ui->horizontalScrollBar_Position->maximum());
         mpSettings->setValue("data",mDataFilename);
         mpSettings->setValue("frequency",ui->spinBox_Frequency->value());
-        if(ui->radioButton_X->isChecked())
-            mpSettings->setValue("component","x");
-        else
-            mpSettings->setValue("component","y");
+
     mpSettings->endGroup();
     mpSettings->beginGroup("filters");
         mpSettings->setValue("type",filterDevice.getFilterType() );
@@ -158,15 +163,21 @@ void MainWindow::loadData()
 void MainWindow::loadData(const QString &aFilename)
 {
     if( mDataLoader.load(aFilename) )
+    {
         mDataFilename = aFilename;
+        filterDevice.addInputData({});
+        filterDevice.addInputData({});
+    }
 }
 
 void MainWindow::showData()
 {
     if(mDataLoader.isDataLoaded())
     {
-        auto& data = ui->radioButton_X->isChecked() ? mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mXData : mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mYData;
-        filterDevice.setInputData(data);
+        auto dataX = mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mXData;
+        auto dataY = mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mYData;
+        filterDevice.setInputData(dataX,0);
+        filterDevice.setInputData(dataY,1);
         ui->label_Data->setText( mDataFilename );
         ui->spinBox_Frequency->setMaximum( mDataLoader.getFrequenciesCount() - 1 );
         filterDevice.generateData();
@@ -180,7 +191,7 @@ void MainWindow::apply()
 {
     updateUI();
     applyValues();
-    generateFilter();
+    generateData();
     showCoefficients();
     scalePlots();
     redrawPlots();
@@ -254,8 +265,6 @@ void MainWindow::updateUI()
 
     bool isDataLoaded = mDataLoader.isDataLoaded();
     ui->spinBox_Frequency->setEnabled(isDataLoaded);
-    ui->radioButton_X->setEnabled(isDataLoaded);
-    ui->radioButton_Y->setEnabled(isDataLoaded);
 
     bool horizontalSlider_Averag = false;
     bool horizontalSlider_Differential = false;
@@ -380,20 +389,52 @@ void MainWindow::resizeEvent(QResizeEvent *e)
         redrawPlots();
 }
 
-void MainWindow::redrawData()
+void MainWindow::redrawHVPlot()
 {
-    ui->plot_Data->graph(0)->setData( QVector<double>::fromStdVector(filterDevice.getDataLenBuffer()),QVector<double>::fromStdVector(filterDevice.getInputData()));
-    ui->plot_Data->graph(1)->setData( QVector<double>::fromStdVector(filterDevice.getDataLenBuffer()),QVector<double>::fromStdVector(filterDevice.getOutputData()));
-    ui->plot_Data->replot();
+    auto dataX = mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mXData;
+    auto dataY = mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mYData;
+
+    ui->plot_DataH->graph(0)->setData( QVector<double>::fromStdVector(filterDevice.getIODataLenBuffer(0)),QVector<double>::fromStdVector(dataX));
+    ui->plot_DataH->graph(1)->setData( QVector<double>::fromStdVector(filterDevice.getIODataLenBuffer(0)),QVector<double>::fromStdVector(filterDevice.getOutputData(0)));
+    ui->plot_DataH->replot();
+
+    ui->plot_DataV->graph(0)->setData( QVector<double>::fromStdVector(filterDevice.getIODataLenBuffer(1)),QVector<double>::fromStdVector(dataY));
+    ui->plot_DataV->graph(1)->setData( QVector<double>::fromStdVector(filterDevice.getIODataLenBuffer(1)),QVector<double>::fromStdVector(filterDevice.getOutputData(1)));
+    ui->plot_DataV->replot();
 }
 
-void MainWindow::redrawFilterResponse()
+void MainWindow::redrawXYPlot()
+{
+    int sweep = ui->comboBox_Sweep->currentText().toInt();
+    int hPosition = ui->horizontalScrollBar_Position->value();
+
+    auto dataX = mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mXData;
+    auto dataY = mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mYData;
+    auto dataXProc = filterDevice.getOutputData(0);
+    auto dataYProc = filterDevice.getOutputData(1);
+
+    int total = dataX.size();
+    int beg = hPosition;
+    int end = hPosition + sweep;
+    if(end >= total)
+        end = total - 1;
+    std::vector<double> dataXY_H(&dataX[beg], &dataX[end]);
+    std::vector<double> dataXY_V(&dataY[beg], &dataY[end]);
+    std::vector<double> dataXY_HProc(&dataXProc[beg], &dataXProc[end]);
+    std::vector<double> dataXY_VProc(&dataYProc[beg], &dataYProc[end]);
+
+    reinterpret_cast<QCPCurve*>(ui->plot_DataXY->plottable(0))->setData( QVector<double>::fromStdVector(dataXY_H),QVector<double>::fromStdVector(dataXY_V));
+    reinterpret_cast<QCPCurve*>(ui->plot_DataXY->plottable(1))->setData( QVector<double>::fromStdVector(dataXY_HProc),QVector<double>::fromStdVector(dataXY_VProc));
+    ui->plot_DataXY->replot();
+}
+
+void MainWindow::redrawFilterResponsePlot()
 {
     ui->plot_FilterResponse->graph(0)->setData( QVector<double>::fromStdVector(filterDevice.getResponseLenBuffer()),QVector<double>::fromStdVector(filterDevice.getFilterResponse()));
     ui->plot_FilterResponse->replot();
 }
 
-void MainWindow::redrawCoefficients()
+void MainWindow::redrawCoefficientsPlot()
 {
     ui->plot_FilterCoefficientes->graph(0)->setData( QVector<double>::fromStdVector(filterDevice.getFilterLenBuffer()),QVector<double>::fromStdVector(filterDevice.getCoefficients()));
     ui->plot_FilterCoefficientes->replot();
@@ -401,30 +442,38 @@ void MainWindow::redrawCoefficients()
 
 void MainWindow::redrawPlots()
 {
-    redrawCoefficients();
-    redrawData();
-    redrawFilterResponse();
+    redrawCoefficientsPlot();
+    redrawHVPlot();
+    redrawXYPlot();
+    redrawFilterResponsePlot();
 }
 
 void MainWindow::scalePlots()
 {
+    auto dataX = mDataLoader.getFrequencyData( ui->spinBox_Frequency->value() ).mXData;
+
     int vScale = ui->verticalSlider_Scale->value();
     int sweep = ui->comboBox_Sweep->currentText().toInt();
 
     ui->horizontalScrollBar_Position->setPageStep( sweep );
-    ui->horizontalScrollBar_Position->setMaximum( filterDevice.getDataLenBuffer().size() - 1 );
+    ui->horizontalScrollBar_Position->setMaximum( dataX.size() - 1 );
 
     int hPosition = ui->horizontalScrollBar_Position->value();
 
-    setPlotScale(ui->plot_Data, hPosition, hPosition + sweep, -pow(2,vScale), pow(2,vScale));
+    setPlotScale(ui->plot_DataH, hPosition, hPosition + sweep, -pow(2,vScale), pow(2,vScale));
+    setPlotScale(ui->plot_DataV, hPosition, hPosition + sweep, -pow(2,vScale), pow(2,vScale));
+    setPlotScale(ui->plot_DataXY, -pow(2,vScale), pow(2,vScale), -pow(2,vScale), pow(2,vScale));
     setPlotScaleX(ui->plot_FilterCoefficientes,-1,filterDevice.getFilterLength());
     setPlotScale(ui->plot_FilterResponse,0,filterDevice.getResponseLenBuffer().size()-1,0,1024*2);
     setPlotScale(ui->plot_FilterCoefficientes,0,filterDevice.getFilterLength()-1,-1,1);
 
-    ui->plot_Data->replot();
+    ui->plot_DataH->replot();
+    ui->plot_DataV->replot();
+
+    redrawXYPlot();
 }
 
-void MainWindow::generateFilter()
+void MainWindow::generateData()
 {
     filterDevice.generateFrequencyRespounse();
     filterDevice.generateData();
@@ -469,3 +518,14 @@ void MainWindow::addGraph(QCustomPlot *aPlot, const QPen& aPen, const QBrush& aB
     graph->setLineStyle(aLineStyle);
     graph->setScatterStyle(aScatterStyle);
 }
+
+void MainWindow::addCurve(QCustomPlot *aPlot, const QPen& aPen, const QBrush& aBrush, QCPCurve::LineStyle aLineStyle, QCPScatterStyle aScatterStyle)
+{
+    auto curve = new QCPCurve(aPlot->xAxis, aPlot->yAxis);
+    aPlot->addPlottable(curve);
+    curve->setPen(aPen);
+    curve->setBrush(aBrush);
+    curve->setLineStyle(aLineStyle);
+    curve->setScatterStyle(aScatterStyle);
+}
+

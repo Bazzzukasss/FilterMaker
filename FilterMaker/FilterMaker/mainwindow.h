@@ -46,18 +46,20 @@ private:
 
     void resizeEvent(QResizeEvent* e);
 
-    void redrawCoefficients();
-    void redrawData();
-    void redrawFilterResponse();
+    void redrawCoefficientsPlot();
+    void redrawHVPlot();
+    void redrawXYPlot();
+    void redrawFilterResponsePlot();
     void redrawPlots();
     void scalePlots();
 
-    void generateFilter();
+    void generateData();
 
     void setPlotScale(QCustomPlot* plot,int min_x,int max_x,int min_y,int max_y);
     void setPlotScaleX(QCustomPlot* plot,int min_x,int max_x);
     void setPlotScaleY(QCustomPlot* plot,int min_y,int max_y);
     void addGraph(QCustomPlot* aPlot, const QPen &aPen, const QBrush& aBrush, QCPGraph::LineStyle aLineStyle, QCPScatterStyle aScatterStyle);
+    void addCurve(QCustomPlot* aPlot, const QPen &aPen, const QBrush& aBrush, QCPCurve::LineStyle aLineStyle, QCPScatterStyle aScatterStyle);
     void initPlot(QCustomPlot* aPlot, const QBrush& aBackgroundBrush, const QString& aLabelX, const QString& aLabelY, bool aTicksX, bool aTicksY);
 };
 
